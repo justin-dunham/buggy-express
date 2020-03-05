@@ -18,7 +18,6 @@ describe("Buggy Middleware", () => {
     // Fast-forward until all timers have been executed
     jest.runAllTimers();
 
-    // Now our callback should have been called!
     expect(next).toHaveBeenCalledTimes(1);
   });
 
@@ -44,6 +43,34 @@ describe("Buggy Middleware", () => {
     });
   });
 
+  it("Will bypass on config", () => {
+    const buggyInstance = buggy({
+      delayMinMS: 0,
+      delayMaxMS: 0,
+      chanceOfError: 0
+    });
+    const request = {};
+    const response = {};
+    const next = jest.fn();
+
+    buggyInstance(request, response, next);
+    expect(next).toHaveBeenCalledTimes(1);
+  });
+
+  it("Will bypass low risk", () => {
+    const buggyInstance = buggy({
+      delayMinMS: 0,
+      delayMaxMS: 0,
+      chanceOfError: 0.00000001
+    });
+    const request = {};
+    const response = {};
+    const next = jest.fn();
+
+    buggyInstance(request, response, next);
+    expect(next).toHaveBeenCalledTimes(1);
+  });
+
   it("Will not error in production env", () => {
     process.env.NODE_ENV = "production";
     const buggyInstance = buggy({
@@ -63,19 +90,16 @@ describe("Buggy Middleware", () => {
 describe("Random Numbers", () => {
   it("Constrains max", () => {
     const random = getRandom(0, 200);
-    // Now our callback should have been called!
     expect(random).toBeLessThanOrEqual(200);
   });
 
   it("Constrains max", () => {
     const random = getRandom(100, 200);
-    // Now our callback should have been called!
     expect(random).toBeGreaterThanOrEqual(100);
   });
 
   it("Constrains range", () => {
     const random = getRandom(100, 101);
-    // Now our callback should have been called!
     expect(random).toBe(100);
   });
 });

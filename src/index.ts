@@ -5,15 +5,12 @@ export interface buggyProps {
   chanceOf500: number;
 }
 
-export default ({ delayMinMS = 0, delayMaxMS = 500, chanceOfError = 0.05 }) => {
-  // DO NOT introduce bugs into production environments
-  if (
-    process.env.NODE_ENV === "production" ||
-    (chanceOfError === 0 && delayMaxMS === 0)
-  ) {
-    console.warn(
-      "buggy-express will not run in production environment but is being called."
-    );
+export default config => {
+  const { delayMinMS = 0, delayMaxMS = 500, chanceOfError = 0.05 } = config;
+  const reasonToBail = shouldBail(config);
+
+  if (reasonToBail) {
+    console.warn(reasonToBail);
     return (request: e.Request, response: e.Response, next: e.NextFunction) =>
       next();
   }
@@ -39,4 +36,18 @@ export default ({ delayMinMS = 0, delayMaxMS = 500, chanceOfError = 0.05 }) => {
 
 export function getRandom(min = 0, max = 500) {
   return Math.floor(Math.random() * (max - min)) + min;
+}
+
+export function shouldBail(config) {
+  const { delayMinMS = 0, delayMaxMS = 500, chanceOfError = 0.05 } = config;
+  // DO NOT introduce bugs into production environments
+  if (process.env.NODE_ENV === "production") {
+    return "buggy-express will not run in production environment but is being called.";
+  }
+  if (chanceOfError === 0 && delayMaxMS === 0) {
+    return "buggy-express was called but is configured to produce no delay or errors";
+  }
+
+  // return falsy string
+  return "";
 }
