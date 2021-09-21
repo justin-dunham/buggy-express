@@ -49,11 +49,10 @@ describe("Buggy Middleware", () => {
       delayMaxMS: 0,
       chanceOfError: 0
     });
-    const request = {};
-    const response = {};
     const next = jest.fn();
 
-    buggyInstance(request, response, next);
+    buggyInstance({}, {}, next);
+
     expect(next).toHaveBeenCalledTimes(1);
   });
 

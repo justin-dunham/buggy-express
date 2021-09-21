@@ -1,11 +1,12 @@
-import e from "express";
+import * as e from "express";
 
 export interface buggyProps {
-  delayMaxMS: number;
-  chanceOf500: number;
+  delayMaxMS?: number;
+  delayMinMS?: number;
+  chanceOfError?: number;
 }
 
-export default config => {
+export default (config: buggyProps) => {
   const { delayMinMS = 0, delayMaxMS = 500, chanceOfError = 0.05 } = config;
   const reasonToBail = shouldBail(config);
 
@@ -38,7 +39,7 @@ export function getRandom(min = 0, max = 500) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-export function shouldBail(config) {
+export function shouldBail(config: buggyProps) {
   const { delayMinMS = 0, delayMaxMS = 500, chanceOfError = 0.05 } = config;
   // DO NOT introduce bugs into production environments
   if (process.env.NODE_ENV === "production") {

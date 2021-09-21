@@ -32,3 +32,13 @@ The example options above will introduce between 0 and 500ms of delay to every c
 | delayMinMS    |    0    |   0-30000 |
 | delayMaxMS    |   500   | 0 - 30000 |
 | chanceOfError |   .05   |     0 - 1 |
+
+### Build
+
+install
+run build
+publish
+package (cp from root)
+readme (cp from root)
+index.d.ts (mv from dist)
+dist/\*
